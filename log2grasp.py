@@ -20,6 +20,9 @@ all_queues = {}
 binsems = {}
 queues = {}
 
+switch_times=0;
+switch_total=0.0;
+
 for line in lines :
 	line = line.strip()
 	inst, args = line.split(' ', 1)
@@ -38,12 +41,14 @@ for line in lines :
 	elif inst == 'switch' :
 		out_task, in_task, tick, tick_reload, out_minitick, in_minitick = args.split(' ')
 		
-		#out_time = (int(tick) + (int(tick_reload) - int(out_minitick)) / int(tick_reload)) / 100 * 1000;
-		#in_time  = (int(tick) + (int(tick_reload) - int(in_minitick))  / int(tick_reload)) / 100 * 1000;
+		#ut_time = (int(tick) + (int(tick_reload) - int(out_minitick)) / int(tick_reload)) / 100 * 1000;
+		#n_time  = (int(tick) + (int(tick_reload) - int(in_minitick))  / int(tick_reload)) / 100 * 1000;
 		out_time = (float(tick) + (float(tick_reload) - float(out_minitick)) / float(tick_reload)) / 100 * 1000;
 		in_time  = (float(tick) + (float(tick_reload) - float(in_minitick))  / float(tick_reload)) / 100 * 1000;
 
-	
+		switch_total += in_time - out_time;
+		switch_times += 1;
+
 		event = {}
 		event['type'] = 'task out'
 		event['task'] = out_task
@@ -167,6 +172,8 @@ for line in lines :
 			tasks[int_num]['created'] = True if dir == 'in' else False
 
 log.close()
+
+print switch_total/switch_times;
 
 grasp = open('sched.grasp', 'w')
 
